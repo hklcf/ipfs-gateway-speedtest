@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width">
+  <title>IPFS Gateway Speedtest</title>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Offside">
+  <style>
+  body{
+    font-size: 12px;
+    font-family: 'Offside'; 
+    background-color: #E6F6D8;
+  }
+  h1{
+    font-size: 4.5em;
+    text-align: center;
+  }
+  h2{
+    font-size: 3.5em;
+    text-align: center;
+  }
+  .main{
+    margin: 20px;
+  }
+  .content{
+    text-align: center;
+    height: 120px;
+  }
+  button{
+    background-color: #71D971;
+    border: 0px;
+    border-radius: 15px;
+    width: 300px;
+    height: 100px;
+    color: white;
+    font-size: 3em;
+    font-family: 'Offside'
+  }
+  button:hover{
+    background-color: #40B440;
+    box-shadow:  5px 5px 10px 1px rgba(0, 0, 0, .5);
+  }
+  #disclaimer{
+    font-size: .8em;
+    color: gray;
+    text-align: center;
+  }
+  </style>
+</head>
+<body>
+<div class="main">
+  <div class="header">
+    <h1>IPFS Gateway Speedtest</h1>
+  </div>
+  <div class="content">
+    <button id="starttest">Start</button>
+  </div>
+  <div id="results">
+  </div>  
+  <div id="disclaimer">
+    <p>We regret due the early publish of this alpha version, we're still not comatible with all browsers. Tested with Chrome (79) and Firefox (71).</p>
+  </div>
+</div>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+<script>
+var startTime, endTime;
+var downloadSize = 9266162;
+var download = new Image();
+var roundedDecimals = 2;
+var bytesInAKilobyte = 1024;
+
+function showResults() {
+  var duration = (endTime - startTime) / 1000;
+  var bitsLoaded = downloadSize * 8;
+  var speedBps = (bitsLoaded / duration);
+  var displaySpeed = speed(speedBps);
+  var results = "<h2>Your connection speed is<h2><h1>" + displaySpeed.value + " " + displaySpeed.units + "</h1>";
+  $('#results').fadeOut('fast', function() {
+    $('#results').html(results);
+    $('#results').fadeIn('fast', function() {
+    });
+  });
+}
+
+function speed(bitsPerSecond) {
+  var Kbps = (bitsPerSecond / bytesInAKilobyte).toFixed(roundedDecimals);
+  if (Kbps <= 1) return {value: bitsPerSecond, units: "bps"};
+  var Mbps = (Kbps / bytesInAKilobyte).toFixed(roundedDecimals);
+  if (Mbps <= 1) return {value: Kbps, units: "Kbps"};
+  var Gbps = (Mbps / bytesInAKilobyte).toFixed(roundedDecimals);
+  if (Gbps <= 1) return {value: Mbps, units: "Mbps"};
+  else return {value: Gbps, units: "Gbps"};
+}
+
+$('#starttest').on('click', function() {
+  $('#results').html('');
+  $('#starttest').text('Loading...');
+  $('#starttest').attr('disabled', 'disabled');
+
+  download.onload = function() {
+    endTime = (new Date()).getTime();
+    showResults();
+    $('#starttest').text('Retry');
+    $('#starttest').removeAttr('disabled');
+  }
+  startTime = (new Date()).getTime();
+  download.src = "test.jpg" + "?n=" + Math.random();
+})
+</script>
+</body>
+</html>
